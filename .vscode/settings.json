@@ -1,5 +1,5 @@
 {
-  "cSpell.words": [
-    "hoyolab"
+  "rust-analyzer.linkedProjects": [
+    ".\\Cargo.toml"
   ]
 }
