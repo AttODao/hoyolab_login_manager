@@ -1,10 +1,21 @@
 use serde::Deserialize;
 
-#[derive(Debug, Deserialize)]
-pub struct UserStats {}
+use crate::{
+  models::{common::game_record::{DailyNote, UserStats}, game_identification::GameIdentification},
+  types::Game,
+};
 
 #[derive(Debug, Deserialize)]
-pub struct DailyNote {
+pub struct GenshinUserStats {}
+impl UserStats for GenshinUserStats {}
+impl GameIdentification for GenshinUserStats {
+  fn game() -> Game {
+    Game::Genshin
+  }
+}
+
+#[derive(Debug, Deserialize)]
+pub struct GenshinDailyNote {
   current_resin: i32,
   max_resin: i32,
   resin_recovery_time: String,
@@ -15,14 +26,20 @@ pub struct DailyNote {
   resin_discount_num_limit: i32,
   current_expedition_num: i32,
   max_expedition_num: i32,
-  expeditions: Vec<Expedition>,
+  expeditions: Vec<GenshinExpedition>,
   current_home_coin: i32,
   max_home_coin: i32,
   home_coin_recovery_time: String,
 }
+impl DailyNote for GenshinDailyNote {}
+impl GameIdentification for GenshinDailyNote {
+  fn game() -> Game {
+    Game::Genshin
+  }
+}
 
 #[derive(Debug, Deserialize)]
-pub struct Expedition {
+pub struct GenshinExpedition {
   avatar_side_icon: String,
   status: String,
   remained_time: String,

@@ -6,17 +6,22 @@ use crate::{
   errors::NetworkError,
   models::{
     account_info::AccountInfo,
-    genshin::daily::{ClaimDaily, DailyInfo},
+    common::daily::{ClaimDaily, DailyInfo},
     json_wrapper::JsonWrapper,
   },
+  types::Game,
 };
 
 use super::network::fetch_endpoint;
 
-const OS_DAILY_URL: &str = "https://sg-hk4e-api.hoyolab.com/event/sol/";
-const OS_ACT_ID: &str = "e202102251931481";
+const OS_DAILY_URL: [&str; 2] = [
+  "https://sg-hk4e-api.hoyolab.com/event/sol/",
+  "https://sg-public-api.hoyolab.com/event/luna/os/",
+];
+const OS_ACT_ID: [&str; 2] = ["e202102251931481", "e202303301540311"];
 
 async fn fetch_daily_endpoint(
+  game: Game,
   endpoint: &str,
   method: Method,
   account_info: AccountInfo,
@@ -24,13 +29,13 @@ async fn fetch_daily_endpoint(
 ) -> Result<Response, NetworkError> {
   let query = &vec![
     ("lang".to_string(), lang.clone()),
-    ("act_id".to_string(), OS_ACT_ID.to_string()),
+    ("act_id".to_string(), OS_ACT_ID[game as usize].to_string()),
   ]
   .into_iter()
   .collect::<HashMap<String, String>>();
 
   fetch_endpoint(
-    OS_DAILY_URL.to_string() + endpoint,
+    OS_DAILY_URL[game as usize].to_string() + endpoint,
     method,
     account_info,
     lang,
@@ -41,13 +46,14 @@ async fn fetch_daily_endpoint(
   .await
 }
 
-pub async fn get_daily_info(
+pub async fn get_daily_info<T: DailyInfo>(
   account_info: AccountInfo,
   lang: String,
-) -> Result<JsonWrapper<DailyInfo>, NetworkError> {
+) -> Result<JsonWrapper<T>, NetworkError> {
   // println!(
   //   "{}",
   //   fetch_daily_endpoint(
+  //     game,
   //     "info",
   //     Method::GET,
   //     account_info.clone(),
@@ -57,27 +63,35 @@ pub async fn get_daily_info(
   //   .text()
   //   .await?
   // );
-  let response = fetch_daily_endpoint("info", Method::GET, account_info, lang).await?;
+  let game = T::game();
+  let response = fetch_daily_endpoint(game, "info", Method::GET, account_info, lang).await?;
   response
-    .json::<JsonWrapper<DailyInfo>>()
+    .json::<JsonWrapper<T>>()
     .await
     .map_err(|_| NetworkError::ParseJsonError)
 }
 
-pub async fn claim_daily(
+pub async fn claim_daily<T: ClaimDaily>(
   account_info: AccountInfo,
   lang: String,
-) -> Result<JsonWrapper<ClaimDaily>, NetworkError> {
-  println!(
-    "{}",
-    fetch_daily_endpoint("sign", Method::POST, account_info.clone(), lang.clone())
-      .await?
-      .text()
-      .await?
-  );
-  let response = fetch_daily_endpoint("sign", Method::POST, account_info, lang).await?;
+) -> Result<JsonWrapper<T>, NetworkError> {
+  // println!(
+  //   "{}",
+  //   fetch_daily_endpoint(
+  //     game,
+  //     "sign",
+  //     Method::POST,
+  //     account_info.clone(),
+  //     lang.clone()
+  //   )
+  //   .await?
+  //   .text()
+  //   .await?
+  // );
+  let game = T::game();
+  let response = fetch_daily_endpoint(game, "sign", Method::POST, account_info, lang).await?;
   response
-    .json::<JsonWrapper<ClaimDaily>>()
+    .json::<JsonWrapper<T>>()
     .await
     .map_err(|_| NetworkError::ParseJsonError)
 }
