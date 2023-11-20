@@ -1,44 +1,25 @@
-use hlm::models::{
-    account_info::AccountInfo,
-    genshin::{daily::GenshinClaimDaily, game_record::GenshinUserStats}, starrail::{daily::StarrailDailyInfo, game_record::StarrailDailyNote},
-  };
+use hlm::{commands, config::CONFIG, errors::CommandError};
+use poise::{
+  framework, samples::register_globally, serenity_prelude::GatewayIntents, Framework,
+  FrameworkOptions,
+};
 
 extern crate hoyolab_login_manager as hlm;
 
 #[tokio::main]
 async fn main() {
-  println!(
-    "{:?}",
-    hlm::networks::game_record::get_daily_note::<StarrailDailyNote>(
-      "800746144".to_string(),
-      AccountInfo::new(
-        "Ft3meFr0ZKxUnAM1MKNkhNjQfLDIunpTeJZ5vi2H".to_string(),
-        "166032325".to_string()
-      ),
-      "ja-jp".to_string()
-    )
-    .await
-  );
-  println!(
-    "{:?}",
-    hlm::networks::daily::claim_daily::<GenshinClaimDaily>(
-      AccountInfo::new(
-        "Ft3meFr0ZKxUnAM1MKNkhNjQfLDIunpTeJZ5vi2H".to_string(),
-        "166032325".to_string()
-      ),
-      "ja-jp".to_string()
-    )
-    .await
-  );
-  println!(
-    "{:?}",
-    hlm::networks::daily::get_daily_info::<StarrailDailyInfo>(
-      AccountInfo::new(
-        "Ft3meFr0ZKxUnAM1MKNkhNjQfLDIunpTeJZ5vi2H".to_string(),
-        "166032325".to_string()
-      ),
-      "ja-jp".to_string()
-    )
-    .await
-  );
+  let framework = Framework::builder()
+    .options(FrameworkOptions {
+      commands: vec![commands::ping::ping()],
+      ..Default::default()
+    })
+    .token(&CONFIG.discord_token)
+    .intents(GatewayIntents::non_privileged())
+    .setup(|context, _ready, framework| {
+      Box::pin(async move {
+        register_globally(context, &framework.options().commands).await?;
+        Ok(())
+      })
+    });
+  framework.run().await.unwrap();
 }
