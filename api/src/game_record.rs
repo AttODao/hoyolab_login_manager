@@ -3,6 +3,7 @@ use std::collections::HashMap;
 use reqwest::{Method, Response};
 
 use crate::{
+  api::fetch_endpoint,
   errors::NetworkError,
   models::{
     account_info::AccountInfo,
@@ -12,8 +13,6 @@ use crate::{
   types::Game,
   utils::recognize_server,
 };
-
-use super::network::fetch_endpoint;
 
 const OS_GAME_RECORD_URL: [&str; 2] = [
   "https://bbs-api-os.hoyoverse.com/game_record/genshin/api/",

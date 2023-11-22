@@ -1,7 +1,6 @@
-use hlm::{commands, config::CONFIG, errors::CommandError};
+use hlm::{commands, config::CONFIG};
 use poise::{
-  framework, samples::register_globally, serenity_prelude::GatewayIntents, Framework,
-  FrameworkOptions,
+  samples::register_globally, serenity_prelude::GatewayIntents, Framework, FrameworkOptions,
 };
 
 extern crate hoyolab_login_manager as hlm;
