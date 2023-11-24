@@ -3,7 +3,10 @@ use std::time::Duration;
 
 use api::{models::login_cookie::LoginCookie, types::Game};
 use migration::{Migrator, MigratorTrait};
-use sea_orm::{ActiveModelTrait, ConnectOptions, Database, DbConn, DbErr, EntityTrait, Set};
+use sea_orm::{
+  ActiveModelTrait, ColumnTrait, ConnectOptions, Database, DbConn, DbErr, EntityTrait, QueryFilter,
+  Set,
+};
 
 use crate::{
   entities::users,
@@ -42,6 +45,20 @@ impl HlmDatabase {
   pub async fn get_user(&self, discord_id: u64) -> Result<Option<users::Model>, DbErr> {
     users::Entity::find_by_id(discord_id as i64)
       .one(&self.conn)
+      .await
+  }
+
+  pub async fn get_claim_daily_users(&self) -> Result<Vec<users::Model>, DbErr> {
+    users::Entity::find()
+      .filter(users::Column::ClaimDaily.eq(true))
+      .all(&self.conn)
+      .await
+  }
+
+  pub async fn get_notify_users(&self) -> Result<Vec<users::Model>, DbErr> {
+    users::Entity::find()
+      .filter(users::Column::Notify.eq(true))
+      .all(&self.conn)
       .await
   }
 
