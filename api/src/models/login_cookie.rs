@@ -1,12 +1,12 @@
 #[derive(Clone)]
-pub struct AccountInfo {
-  ltoken: String,
-  ltuid: String,
+pub struct LoginCookie {
+  pub ltoken: String,
+  pub ltuid: String,
 }
 
-impl AccountInfo {
-  pub fn new(ltoken: String, ltuid: String) -> AccountInfo {
-    AccountInfo { ltoken, ltuid }
+impl LoginCookie {
+  pub fn new(ltoken: String, ltuid: String) -> Self {
+    LoginCookie { ltoken, ltuid }
   }
 
   pub fn get_cookie(&self) -> String {

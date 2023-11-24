@@ -6,9 +6,9 @@ use crate::{
   api::fetch_endpoint,
   errors::NetworkError,
   models::{
-    account_info::AccountInfo,
     common::game_record::{DailyNote, UserStats},
     json_wrapper::JsonWrapper,
+    login_cookie::LoginCookie,
   },
   types::Game,
   utils::recognize_server,
@@ -23,14 +23,14 @@ async fn fetch_game_record_endpoint(
   game: Game,
   endpoint: &str,
   method: Method,
-  account_info: AccountInfo,
+  login_cookie: LoginCookie,
   lang: String,
   query: &HashMap<String, String>,
 ) -> Result<Response, NetworkError> {
   fetch_endpoint(
     OS_GAME_RECORD_URL[game as usize].to_string() + endpoint,
     method,
-    account_info,
+    login_cookie,
     lang,
     None,
     Some(query),
@@ -41,7 +41,7 @@ async fn fetch_game_record_endpoint(
 
 pub async fn get_user_stats<T: UserStats>(
   uid: String,
-  account_info: AccountInfo,
+  login_cookie: LoginCookie,
   lang: String,
 ) -> Result<JsonWrapper<T>, NetworkError> {
   // println!(
@@ -72,7 +72,7 @@ pub async fn get_user_stats<T: UserStats>(
     game,
     "index",
     Method::GET,
-    account_info,
+    login_cookie,
     lang,
     &vec![
       (
@@ -95,7 +95,7 @@ pub async fn get_user_stats<T: UserStats>(
 
 pub async fn get_daily_note<T: DailyNote>(
   uid: String,
-  account_info: AccountInfo,
+  account_info: LoginCookie,
   lang: String,
 ) -> Result<JsonWrapper<T>, NetworkError> {
   // println!(

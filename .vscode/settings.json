@@ -4,5 +4,6 @@
     "./api/Cargo.toml",
     "./database/Cargo.toml",
     "./migration/Cargo.toml",
+    "./services/Cargo.toml"
   ]
 }

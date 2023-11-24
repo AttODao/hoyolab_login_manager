@@ -1,3 +1,7 @@
 /target
+/api/target
+/database/target
+/migration/target
+/services/target
 /config.yml
 /.env

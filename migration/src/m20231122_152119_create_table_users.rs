@@ -13,7 +13,7 @@ impl MigrationTrait for Migration {
           .if_not_exists()
           .col(
             ColumnDef::new(Users::DiscordId)
-              .big_unsigned()
+              .big_integer()
               .not_null()
               .primary_key(),
           )
@@ -28,7 +28,7 @@ impl MigrationTrait for Migration {
               .default(false),
           )
           .col(
-            ColumnDef::new(Users::Notification)
+            ColumnDef::new(Users::Notify)
               .boolean()
               .not_null()
               .default(false),
@@ -54,5 +54,5 @@ enum Users {
   Ltoken,
   Ltuid,
   ClaimDaily,
-  Notification,
+  Notify,
 }

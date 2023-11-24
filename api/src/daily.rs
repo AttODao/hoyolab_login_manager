@@ -6,9 +6,9 @@ use crate::{
   api::fetch_endpoint,
   errors::NetworkError,
   models::{
-    account_info::AccountInfo,
     common::daily::{ClaimDaily, DailyInfo},
     json_wrapper::JsonWrapper,
+    login_cookie::LoginCookie,
   },
   types::Game,
 };
@@ -23,7 +23,7 @@ async fn fetch_daily_endpoint(
   game: Game,
   endpoint: &str,
   method: Method,
-  account_info: AccountInfo,
+  login_cookie: LoginCookie,
   lang: String,
 ) -> Result<Response, NetworkError> {
   let query = &vec![
@@ -36,7 +36,7 @@ async fn fetch_daily_endpoint(
   fetch_endpoint(
     OS_DAILY_URL[game as usize].to_string() + endpoint,
     method,
-    account_info,
+    login_cookie,
     lang,
     None,
     Some(query),
@@ -46,7 +46,7 @@ async fn fetch_daily_endpoint(
 }
 
 pub async fn get_daily_info<T: DailyInfo>(
-  account_info: AccountInfo,
+  login_cookie: LoginCookie,
   lang: String,
 ) -> Result<JsonWrapper<T>, NetworkError> {
   // println!(
@@ -63,7 +63,7 @@ pub async fn get_daily_info<T: DailyInfo>(
   //   .await?
   // );
   let game = T::game();
-  let response = fetch_daily_endpoint(game, "info", Method::GET, account_info, lang).await?;
+  let response = fetch_daily_endpoint(game, "info", Method::GET, login_cookie, lang).await?;
   response
     .json::<JsonWrapper<T>>()
     .await
@@ -71,7 +71,7 @@ pub async fn get_daily_info<T: DailyInfo>(
 }
 
 pub async fn claim_daily<T: ClaimDaily>(
-  account_info: AccountInfo,
+  login_cookie: LoginCookie,
   lang: String,
 ) -> Result<JsonWrapper<T>, NetworkError> {
   // println!(
@@ -88,7 +88,7 @@ pub async fn claim_daily<T: ClaimDaily>(
   //   .await?
   // );
   let game = T::game();
-  let response = fetch_daily_endpoint(game, "sign", Method::POST, account_info, lang).await?;
+  let response = fetch_daily_endpoint(game, "sign", Method::POST, login_cookie, lang).await?;
   response
     .json::<JsonWrapper<T>>()
     .await

@@ -1,14 +1,17 @@
-pub fn add(left: usize, right: usize) -> usize {
-    left + right
-}
+pub mod entities;
+
+pub mod database;
+pub mod results;
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+  use crate::database::HlmDatabase;
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
+  #[tokio::test]
+  async fn test_insert() {
+    let db = HlmDatabase::connect("postgres://postgres:Atsu05012878@localhost/hlm".to_string())
+      .await
+      .unwrap();
+    db.close().await.unwrap();
+  }
 }

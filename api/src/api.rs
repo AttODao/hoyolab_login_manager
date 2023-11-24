@@ -2,7 +2,7 @@ use std::{collections::HashMap, convert::TryInto};
 
 use reqwest::{header::HeaderMap, Client, Method, Response};
 
-use crate::{errors::NetworkError, models::account_info::AccountInfo, utils::generate_ds};
+use crate::{errors::NetworkError, models::login_cookie::LoginCookie, utils::generate_ds};
 
 const OS_DS_SALT: &str = "6s25p5ox5y14umn1p61aqyyvbvvl3lrt";
 // const CN_DS_SALT: &str = "xV8v4Qu54lUKrEYFZkJhB8cuOh9Asafs";
@@ -15,14 +15,14 @@ const OS_RPC_CLIENT_TYPE: &str = "5";
 pub async fn fetch_endpoint(
   url: String,
   method: Method,
-  account_info: AccountInfo,
+  login_cookie: LoginCookie,
   lang: String,
   json: Option<&HashMap<String, String>>,
   query: Option<&HashMap<String, String>>,
   headers: Option<HeaderMap>,
 ) -> Result<Response, NetworkError> {
   let mut header_map = HashMap::new();
-  header_map.insert("Cookie".to_string(), account_info.get_cookie());
+  header_map.insert("Cookie".to_string(), login_cookie.get_cookie());
   header_map.insert(
     "ds".to_string(),
     generate_ds(OS_DS_SALT).ok_or(NetworkError::GenerateDsError)?,

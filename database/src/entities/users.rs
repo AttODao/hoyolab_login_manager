@@ -12,7 +12,7 @@ pub struct Model {
     pub ltoken: Option<String>,
     pub ltuid: Option<String>,
     pub claim_daily: bool,
-    pub notification: bool,
+    pub notify: bool,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
