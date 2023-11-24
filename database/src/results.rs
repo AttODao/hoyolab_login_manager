@@ -1,5 +1,3 @@
-use sea_orm::InsertResult;
-
 #[derive(Debug)]
 pub enum RegisterResult {
   Registered,
