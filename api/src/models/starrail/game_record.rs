@@ -1,4 +1,7 @@
+use std::time::Duration;
+
 use serde::Deserialize;
+use serde_with::serde_as;
 
 use crate::{
   models::{
@@ -17,11 +20,13 @@ impl GameIdentification for StarrailUserStats {
   }
 }
 
+#[serde_as]
 #[derive(Debug, Deserialize)]
 pub struct StarrailDailyNote {
   current_stamina: i32,
   max_stamina: i32,
-  stamina_recover_time: i32,
+  #[serde_as(as = "crate::models::deserializers::to_duration::ToDuration")]
+  stamina_recover_time: Duration,
   accepted_epedition_num: i32,
   total_expedition_num: i32,
   expeditions: Vec<StarrailExpedition>,
@@ -41,11 +46,13 @@ impl GameIdentification for StarrailDailyNote {
   }
 }
 
+#[serde_as]
 #[derive(Debug, Deserialize)]
 pub struct StarrailExpedition {
   avatars: Vec<String>,
   status: String,
-  remaining_time: i32,
+  #[serde_as(as = "crate::models::deserializers::to_duration::ToDuration")]
+  remaining_time: Duration,
   name: String,
   item_url: String,
 }

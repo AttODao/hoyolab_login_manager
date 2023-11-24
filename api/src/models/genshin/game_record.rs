@@ -1,7 +1,13 @@
+use std::time::Duration;
+
 use serde::Deserialize;
+use serde_with::serde_as;
 
 use crate::{
-  models::{common::game_record::{DailyNote, UserStats}, game_identification::GameIdentification},
+  models::{
+    common::game_record::{DailyNote, UserStats},
+    game_identification::GameIdentification,
+  },
   types::Game,
 };
 
@@ -14,11 +20,13 @@ impl GameIdentification for GenshinUserStats {
   }
 }
 
+#[serde_as]
 #[derive(Debug, Deserialize)]
 pub struct GenshinDailyNote {
   current_resin: i32,
   max_resin: i32,
-  resin_recovery_time: String,
+  #[serde_as(as = "crate::models::deserializers::to_duration::ToDuration")]
+  resin_recovery_time: Duration,
   finished_task_num: i32,
   total_task_num: i32,
   is_extra_task_reward_received: bool,
@@ -29,7 +37,8 @@ pub struct GenshinDailyNote {
   expeditions: Vec<GenshinExpedition>,
   current_home_coin: i32,
   max_home_coin: i32,
-  home_coin_recovery_time: String,
+  #[serde_as(as = "crate::models::deserializers::to_duration::ToDuration")]
+  home_coin_recovery_time: Duration,
 }
 impl DailyNote for GenshinDailyNote {}
 impl GameIdentification for GenshinDailyNote {
@@ -38,9 +47,11 @@ impl GameIdentification for GenshinDailyNote {
   }
 }
 
+#[serde_as]
 #[derive(Debug, Deserialize)]
 pub struct GenshinExpedition {
   avatar_side_icon: String,
   status: String,
-  remained_time: String,
+  #[serde_as(as = "crate::models::deserializers::to_duration::ToDuration")]
+  remained_time: Duration,
 }

@@ -10,10 +10,6 @@ impl<'de> DeserializeAs<'de, Duration> for ToDuration {
   where
     D: serde::Deserializer<'de>,
   {
-    Ok(Duration::from_secs(
-      String::deserialize(deserializer)?
-        .parse::<u64>()
-        .unwrap_or(0),
-    ))
+    Ok(Duration::from_secs(u64::deserialize(deserializer)?))
   }
 }
