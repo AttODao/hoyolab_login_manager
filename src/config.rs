@@ -6,6 +6,8 @@ use serde::Deserialize;
 pub struct Config {
   pub hoge: String,
   pub discord_token: String,
+  pub database_url: String,
+  pub lang: String,
 }
 impl Config {
   pub fn from_file() -> Result<Self, ConfigError> {

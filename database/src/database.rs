@@ -18,7 +18,7 @@ pub struct HlmDatabase {
 }
 
 impl HlmDatabase {
-  pub async fn connect(url: String) -> Result<Self, DbErr> {
+  pub async fn connect(url: &str) -> Result<Self, DbErr> {
     let mut opt = ConnectOptions::new(url);
     opt
       .max_connections(100)
@@ -31,7 +31,7 @@ impl HlmDatabase {
       .sqlx_logging_level(log::LevelFilter::Info);
     let conn = Database::connect(opt).await?;
 
-    Migrator::up(&conn, None).await?;
+    Migrator::refresh(&conn).await?;
 
     Ok(HlmDatabase { conn })
   }

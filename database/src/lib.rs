@@ -9,7 +9,7 @@ mod tests {
 
   #[tokio::test]
   async fn test_insert() {
-    let db = HlmDatabase::connect("postgres://postgres:Atsu05012878@localhost/hlm".to_string())
+    let db = HlmDatabase::connect("postgres://postgres:Atsu05012878@localhost/hlm")
       .await
       .unwrap();
     db.close().await.unwrap();
