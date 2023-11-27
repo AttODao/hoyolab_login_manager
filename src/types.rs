@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use database::database::HlmDatabase;
+use database::HlmDatabase;
 
 use crate::errors::CommandError;
 

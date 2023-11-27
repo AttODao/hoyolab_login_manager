@@ -1,7 +1,9 @@
 pub mod entities;
 
-pub mod database;
+mod database;
 pub mod results;
+
+pub use database::HlmDatabase;
 
 #[cfg(test)]
 mod tests {

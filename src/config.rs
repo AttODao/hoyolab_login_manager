@@ -1,3 +1,4 @@
+use chrono::naive::NaiveTime;
 use config::ConfigError;
 use once_cell::sync::Lazy;
 use serde::Deserialize;
@@ -8,6 +9,8 @@ pub struct Config {
   pub discord_token: String,
   pub database_url: String,
   pub lang: String,
+  pub scheduler_interval_mins: u64,
+  pub claim_time: NaiveTime,
 }
 impl Config {
   pub fn from_file() -> Result<Self, ConfigError> {

@@ -43,8 +43,10 @@ impl Scheduler {
       }
     });
   }
+}
 
-  pub fn stop(&self) {
+impl Drop for Scheduler {
+  fn drop(&mut self) {
     self.cancel_token.cancel();
   }
 }

@@ -138,6 +138,7 @@ dependencies = [
  "strum",
  "strum_macros",
  "thiserror",
+ "tokio",
 ]
 
 [[package]]
@@ -1315,6 +1316,7 @@ dependencies = [
  "once_cell",
  "poise",
  "scheduler",
+ "sea-orm",
  "serde",
  "thiserror",
  "tokio",

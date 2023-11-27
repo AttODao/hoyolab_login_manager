@@ -23,21 +23,21 @@ impl GameIdentification for StarrailUserStats {
 #[serde_as]
 #[derive(Debug, Deserialize)]
 pub struct StarrailDailyNote {
-  current_stamina: i32,
-  max_stamina: i32,
-  #[serde_as(as = "crate::models::deserializers::to_duration::ToDuration")]
-  stamina_recover_time: Duration,
-  accepted_epedition_num: i32,
-  total_expedition_num: i32,
-  expeditions: Vec<StarrailExpedition>,
-  current_train_score: i32,
-  max_train_score: i32,
-  current_rogue_score: i32,
-  max_rogue_score: i32,
-  weekly_cocoon_cnt: i32,
-  weekly_cocoon_limit: i32,
-  current_reserve_stamina: i32,
-  is_reserve_stamina_full: bool,
+  pub current_stamina: i32,
+  pub max_stamina: i32,
+  #[serde_as(as = "crate::models::deserializers::starrail_to_duration::StarrailToDuration")]
+  pub stamina_recover_time: Duration,
+  pub accepted_epedition_num: i32,
+  pub total_expedition_num: i32,
+  pub expeditions: Vec<StarrailExpedition>,
+  pub current_train_score: i32,
+  pub max_train_score: i32,
+  pub current_rogue_score: i32,
+  pub max_rogue_score: i32,
+  pub weekly_cocoon_cnt: i32,
+  pub weekly_cocoon_limit: i32,
+  pub current_reserve_stamina: i32,
+  pub is_reserve_stamina_full: bool,
 }
 impl DailyNote for StarrailDailyNote {}
 impl GameIdentification for StarrailDailyNote {
@@ -49,10 +49,10 @@ impl GameIdentification for StarrailDailyNote {
 #[serde_as]
 #[derive(Debug, Deserialize)]
 pub struct StarrailExpedition {
-  avatars: Vec<String>,
-  status: String,
-  #[serde_as(as = "crate::models::deserializers::to_duration::ToDuration")]
-  remaining_time: Duration,
-  name: String,
-  item_url: String,
+  pub avatars: Vec<String>,
+  pub status: String,
+  #[serde_as(as = "crate::models::deserializers::starrail_to_duration::StarrailToDuration")]
+  pub remaining_time: Duration,
+  pub name: String,
+  pub item_url: String,
 }

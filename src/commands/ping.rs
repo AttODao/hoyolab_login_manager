@@ -1,5 +1,6 @@
 use crate::{errors::CommandError, types::Context};
 
+/// Reply "Pong!"
 #[poise::command(slash_command)]
 pub async fn ping(context: Context<'_>) -> Result<(), CommandError> {
   context

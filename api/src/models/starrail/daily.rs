@@ -10,9 +10,9 @@ use crate::{
 
 #[derive(Debug, Deserialize)]
 pub struct StarrailDailyInfo {
-  total_sign_day: i32,
-  is_sign: bool,
-  sign_cnt_missed: i32,
+  pub total_sign_day: i32,
+  pub is_sign: bool,
+  pub sign_cnt_missed: i32,
 }
 impl DailyInfo for StarrailDailyInfo {}
 impl GameIdentification for StarrailDailyInfo {

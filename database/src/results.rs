@@ -5,7 +5,14 @@ pub enum RegisterResult {
 }
 
 #[derive(Debug)]
-pub enum SetResult {
+pub enum SetCookieResult {
   Set,
+  AccountNotRegistered,
+}
+
+#[derive(Debug)]
+pub enum SettingResult {
+  Set,
+  CookieNotSet,
   AccountNotRegistered,
 }

@@ -10,7 +10,7 @@ use sea_orm::{
 
 use crate::{
   entities::users,
-  results::{RegisterResult, SetResult},
+  results::{RegisterResult, SetCookieResult, SettingResult},
 };
 
 pub struct HlmDatabase {
@@ -31,7 +31,7 @@ impl HlmDatabase {
       .sqlx_logging_level(log::LevelFilter::Info);
     let conn = Database::connect(opt).await?;
 
-    Migrator::refresh(&conn).await?;
+    Migrator::up(&conn, None).await?;
 
     Ok(HlmDatabase { conn })
   }
@@ -105,7 +105,7 @@ impl HlmDatabase {
     &self,
     discord_id: u64,
     login_cookie: LoginCookie,
-  ) -> Result<SetResult, DbErr> {
+  ) -> Result<SetCookieResult, DbErr> {
     if let Some(user) = users::Entity::find_by_id(discord_id as i64)
       .one(&self.conn)
       .await?
@@ -114,9 +114,9 @@ impl HlmDatabase {
       user.ltoken = Set(Some(login_cookie.ltoken));
       user.ltuid = Set(Some(login_cookie.ltuid));
       user.update(&self.conn).await?;
-      Ok(SetResult::Set)
+      Ok(SetCookieResult::Set)
     } else {
-      Ok(SetResult::AccountNotRegistered)
+      Ok(SetCookieResult::AccountNotRegistered)
     }
   }
 
@@ -124,31 +124,37 @@ impl HlmDatabase {
     &self,
     discord_id: u64,
     claim_daily: bool,
-  ) -> Result<SetResult, DbErr> {
+  ) -> Result<SettingResult, DbErr> {
     if let Some(user) = users::Entity::find_by_id(discord_id as i64)
       .one(&self.conn)
       .await?
     {
+      if user.login_cookie().is_none() {
+        return Ok(SettingResult::CookieNotSet);
+      }
       let mut user: users::ActiveModel = user.into();
       user.claim_daily = Set(claim_daily);
       user.update(&self.conn).await?;
-      Ok(SetResult::Set)
+      Ok(SettingResult::Set)
     } else {
-      Ok(SetResult::AccountNotRegistered)
+      Ok(SettingResult::AccountNotRegistered)
     }
   }
 
-  pub async fn set_notify(&self, discord_id: u64, notify: bool) -> Result<SetResult, DbErr> {
+  pub async fn set_notify(&self, discord_id: u64, notify: bool) -> Result<SettingResult, DbErr> {
     if let Some(user) = users::Entity::find_by_id(discord_id as i64)
       .one(&self.conn)
       .await?
     {
+      if user.login_cookie().is_none() {
+        return Ok(SettingResult::CookieNotSet);
+      }
       let mut user: users::ActiveModel = user.into();
       user.notify = Set(notify);
       user.update(&self.conn).await?;
-      Ok(SetResult::Set)
+      Ok(SettingResult::Set)
     } else {
-      Ok(SetResult::AccountNotRegistered)
+      Ok(SettingResult::AccountNotRegistered)
     }
   }
 }
