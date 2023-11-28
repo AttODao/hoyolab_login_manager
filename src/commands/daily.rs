@@ -6,6 +6,7 @@ use api::{
     starrail::daily::{StarrailClaimDaily, StarrailDailyInfo},
   },
 };
+use log::error;
 use poise::serenity_prelude::Color;
 
 use crate::{commands::choices::GameChoice, config::CONFIG, errors::CommandError, types::Context};
@@ -56,9 +57,11 @@ pub async fn set(
               "アカウントが登録されていません. /registerでユーザーIDを登録してください.",
             )
           }
-          Err(err) => e
-            .color(Color::DARK_RED)
-            .description(format!("登録に失敗しました. ({})", err)),
+          Err(err) => {
+            error!("[daily set command] Database error: {}", err);
+            e.color(Color::DARK_RED)
+              .description(format!("登録に失敗しました. ({})", err))
+          }
         }
       })
     })
@@ -165,18 +168,22 @@ pub async fn info(
               e
             }
           }
-          Ok(Some(Some(Err(err)))) => e
-            .color(Color::DARK_RED)
-            .description(format!("取得に失敗しました. ({})", err)),
+          Ok(Some(Some(Err(err)))) => {
+            error!("[daily info command] Network error: {}", err);
+            e.color(Color::DARK_RED)
+              .description(format!("取得に失敗しました. ({})", err))
+          }
           Ok(Some(None)) => e
             .color(Color::DARK_RED)
             .description("Cookieが設定されていません. /cookieで設定してください."),
           Ok(None) => e.color(Color::DARK_RED).description(
             "アカウントが登録されていません. /registerでユーザーIDを登録してください.",
           ),
-          Err(err) => e
-            .color(Color::DARK_RED)
-            .description(format!("取得に失敗しました. ({})", err)),
+          Err(err) => {
+            error!("[daily info command] Database error: {}", err);
+            e.color(Color::DARK_RED)
+              .description(format!("取得に失敗しました. ({})", err))
+          }
         }
       })
     })
@@ -232,7 +239,7 @@ pub async fn claim(context: Context<'_>) -> Result<(), CommandError> {
               e.field(
                 "原神",
                 match genshin_claim_daily.data {
-                  Some(genshin_claim_daily) => "受け取りが完了しました.".to_string(),
+                  Some(_) => "受け取りが完了しました.".to_string(),
                   None => format!("受け取りに失敗しました. ({})", genshin_claim_daily.message),
                 },
                 true,
@@ -242,7 +249,7 @@ pub async fn claim(context: Context<'_>) -> Result<(), CommandError> {
               e.field(
                 "スターレイル",
                 match starrail_claim_daily.data {
-                  Some(starrail_claim_daily) => "受け取りが完了しました.".to_string(),
+                  Some(_) => "受け取りが完了しました.".to_string(),
                   None => format!("受け取りに失敗しました. ({})", starrail_claim_daily.message),
                 },
                 true,
@@ -250,18 +257,22 @@ pub async fn claim(context: Context<'_>) -> Result<(), CommandError> {
             }
             e
           }
-          Ok(Some(Some(Err(err)))) => e
-            .color(Color::DARK_RED)
-            .description(format!("取得に失敗しました. ({})", err)),
+          Ok(Some(Some(Err(err)))) => {
+            error!("[daily claim command] Network error: {}", err);
+            e.color(Color::DARK_RED)
+              .description(format!("取得に失敗しました. ({})", err))
+          }
           Ok(Some(None)) => e
             .color(Color::DARK_RED)
             .description("Cookieが設定されていません. /cookieで設定してください."),
           Ok(None) => e.color(Color::DARK_RED).description(
             "アカウントが登録されていません. /registerでユーザーIDを登録してください.",
           ),
-          Err(err) => e
-            .color(Color::DARK_RED)
-            .description(format!("受け取りに失敗しました. ({})", err)),
+          Err(err) => {
+            error!("[daily claim command] Database error: {}", err);
+            e.color(Color::DARK_RED)
+              .description(format!("受け取りに失敗しました. ({})", err))
+          }
         }
       })
     })

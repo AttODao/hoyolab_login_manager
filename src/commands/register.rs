@@ -1,3 +1,4 @@
+use log::error;
 use poise::serenity_prelude::Color;
 
 use crate::{errors::CommandError, types::Context};
@@ -37,9 +38,11 @@ pub async fn register(
           Ok(database::results::RegisterResult::Updated) => e
             .color(Color::DARK_GREEN)
             .description("ユーザーIDが変更されました."),
-          Err(err) => e
-            .color(Color::DARK_RED)
-            .description(format!("登録に失敗しました. ({})", err)),
+          Err(err) => {
+            error!("[register command] Database error: {}", err);
+            e.color(Color::DARK_RED)
+              .description(format!("登録に失敗しました. ({})", err))
+          }
         }
       })
     })

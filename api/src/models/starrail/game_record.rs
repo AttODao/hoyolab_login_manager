@@ -50,7 +50,9 @@ impl GameIdentification for StarrailDailyNote {
 #[derive(Debug, Deserialize)]
 pub struct StarrailExpedition {
   pub avatars: Vec<String>,
-  pub status: String,
+  #[serde(rename = "status")]
+  #[serde_as(as = "crate::models::deserializers::to_ongoing::ToOngoing")]
+  pub ongoing: bool,
   #[serde_as(as = "crate::models::deserializers::starrail_to_duration::StarrailToDuration")]
   pub remaining_time: Duration,
   pub name: String,

@@ -1,4 +1,5 @@
 use api::models::login_cookie::LoginCookie;
+use log::error;
 use poise::serenity_prelude::Color;
 
 use crate::{errors::CommandError, types::Context};
@@ -28,9 +29,11 @@ pub async fn cookie(
               "アカウントが登録されていません. /registerでユーザーIDを登録してください.",
             )
           }
-          Err(err) => e
-            .color(Color::DARK_RED)
-            .description(format!("登録に失敗しました. ({})", err)),
+          Err(err) => {
+            error!("[cookie command] Database error: {}", err);
+            e.color(Color::DARK_RED)
+              .description(format!("登録に失敗しました. ({})", err))
+          }
         }
       })
     })

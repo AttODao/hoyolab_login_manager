@@ -1,3 +1,4 @@
+use log::error;
 use poise::serenity_prelude::Color;
 
 use crate::{errors::CommandError, types::Context};
@@ -44,9 +45,11 @@ pub async fn set(
               "アカウントが登録されていません. /registerでユーザーIDを登録してください.",
             )
           }
-          Err(err) => e
-            .colour(Color::DARK_RED)
-            .description(format!("登録に失敗しました. ({})", err)),
+          Err(err) => {
+            error!("[notify set command] Database error: {}", err);
+            e.colour(Color::DARK_RED)
+              .description(format!("登録に失敗しました. ({})", err))
+          }
         }
       })
     })
@@ -91,9 +94,11 @@ pub async fn info(context: Context<'_>) -> Result<(), CommandError> {
               "アカウントが登録されていません. /registerでユーザーIDを登録してください.",
             ),
           },
-          Err(err) => e
-            .colour(Color::DARK_RED)
-            .description(format!("取得に失敗しました. ({})", err)),
+          Err(err) => {
+            error!("[notify info command] Database error: {}", err);
+            e.colour(Color::DARK_RED)
+              .description(format!("取得に失敗しました. ({})", err))
+          }
         }
       })
     })
