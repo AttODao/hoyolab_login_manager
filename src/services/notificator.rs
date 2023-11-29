@@ -2,10 +2,7 @@ use std::{sync::Arc, time::Duration, vec};
 
 use api::{
   game_record::get_daily_note,
-  models::{
-    genshin::game_record::GenshinDailyNote, json_wrapper::JsonWrapper, login_cookie::LoginCookie,
-    starrail::game_record::StarrailDailyNote,
-  },
+  models::{genshin::game_record::GenshinDailyNote, starrail::game_record::StarrailDailyNote},
 };
 use async_trait::async_trait;
 use database::HlmDatabase;
