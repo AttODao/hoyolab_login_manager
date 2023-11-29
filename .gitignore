@@ -5,3 +5,4 @@
 /scheduler/target
 /config.yml
 /db.env
+/docker-compose.yml
