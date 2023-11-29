@@ -2,7 +2,10 @@ use std::{sync::Arc, time::Duration};
 
 use database::HlmDatabase;
 use hlm::{
-  commands, config::CONFIG, errors::CommandError, services::daily_claimer::DailyClaimer,
+  commands,
+  config::CONFIG,
+  errors::CommandError,
+  services::{daily_claimer::DailyClaimer, notificator::Notificator},
   types::Data,
 };
 use log::{info, warn};
@@ -61,11 +64,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     .await?;
 
   let cache_http = framework.client().cache_and_http.clone();
-  let scheduler = Scheduler::from_scheduleds(vec![Box::new(DailyClaimer::new(
-    database.clone(),
-    cache_http.clone(),
-    CONFIG.claim_daily_time,
-  ))]);
+  let scheduler = Scheduler::from_scheduleds(vec![
+    Box::new(DailyClaimer::new(
+      database.clone(),
+      cache_http.clone(),
+      CONFIG.claim_daily_time,
+    )),
+    Box::new(Notificator::new(database.clone(), cache_http.clone())),
+  ]);
   info!("Starting scheduler");
   scheduler.run(Duration::from_secs(60 * CONFIG.scheduler_interval_mins));
 
