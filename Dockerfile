@@ -4,7 +4,7 @@ RUN apk update && apk add gcc
 WORKDIR /hoyolab_login_manager
 RUN cargo build --release
 
-FROM alpine:bullseye-slim
+FROM debian:bullseye-slim
 WORKDIR /app
 COPY --from=build /hoyolab_login_manager/target/release/hoyolab_login_manager ./
 COPY ./config.yml ./
