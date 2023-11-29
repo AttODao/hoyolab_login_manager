@@ -1,20 +1,35 @@
 use std::{sync::Arc, time::Duration};
 
 use database::HlmDatabase;
-use futures::FutureExt;
-use hlm::{commands, config::CONFIG, services::daily_claimer::DailyClaimer, types::Data};
-use log::info;
+use hlm::{
+  commands, config::CONFIG, errors::CommandError, services::daily_claimer::DailyClaimer,
+  types::Data,
+};
+use log::{info, warn};
 use poise::{
   samples::register_globally, serenity_prelude::GatewayIntents, Framework, FrameworkOptions,
 };
 use scheduler::Scheduler;
-use tokio::signal;
 
 extern crate hoyolab_login_manager as hlm;
 
+async fn on_error(error: poise::FrameworkError<'_, Data, CommandError>) {
+  match error {
+    poise::FrameworkError::Setup { error, .. } => panic!("Failed to start bot: {:?}", error),
+    poise::FrameworkError::Command { error, ctx, .. } => {
+      println!("Error in command `{}`: {:?}", ctx.command().name, error,);
+    }
+    error => {
+      if let Err(e) = poise::builtins::on_error(error).await {
+        println!("Error while handling error: {}", e)
+      }
+    }
+  }
+}
+
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-  env_logger::init_from_env(env_logger::Env::new().default_filter_or("error"));
+  env_logger::init_from_env(env_logger::Env::new().default_filter_or("warn"));
 
   info!("Initialize database");
   let database = Arc::new(HlmDatabase::connect(&CONFIG.database_url).await?);
@@ -29,6 +44,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         commands::notify::notify(),
         commands::register::register(),
       ],
+      on_error: |error| Box::pin(on_error(error)),
       ..Default::default()
     })
     .token(&CONFIG.discord_token)
@@ -54,13 +70,42 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
   scheduler.run(Duration::from_secs(60 * CONFIG.scheduler_interval_mins));
 
   info!("Starting bot");
-  futures::select! {
-    res = framework.start().fuse() => Ok(res?),
-    ctrlc = signal::ctrl_c().fuse() => {
-      if ctrlc.is_ok() {
-        info!("ctrl_c");
-      }
-      Ok(ctrlc?)
+  let mut client = framework.client();
+  let shard_manager = client.shard_manager.clone();
+
+  tokio::spawn(async move {
+    #[cfg(unix)]
+    {
+      use tokio::signal::unix as signal;
+
+      let [mut s1, mut s2, mut s3] = [
+        signal::signal(signal::SignalKind::hangup()).unwrap(),
+        signal::signal(signal::SignalKind::interrupt()).unwrap(),
+        signal::signal(signal::SignalKind::terminate()).unwrap(),
+      ];
+
+      tokio::select!(
+          v = s1.recv() => v.unwrap(),
+          v = s2.recv() => v.unwrap(),
+          v = s3.recv() => v.unwrap(),
+      );
     }
-  }
+    #[cfg(windows)]
+    {
+      let (mut s1, mut s2) = (
+        tokio::signal::windows::ctrl_c().unwrap(),
+        tokio::signal::windows::ctrl_break().unwrap(),
+      );
+
+      tokio::select!(
+          v = s1.recv() => v.unwrap(),
+          v = s2.recv() => v.unwrap(),
+      );
+    }
+
+    warn!("Recieved control C and shutting down.");
+    shard_manager.lock().await.shutdown_all().await;
+  });
+
+  client.start_autosharded().await.map_err(Into::into)
 }
