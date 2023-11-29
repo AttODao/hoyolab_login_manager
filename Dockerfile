@@ -1,6 +1,5 @@
 FROM rust:latest AS build
 COPY ./ /
-RUN apk update && apk add gcc
 WORKDIR /hoyolab_login_manager
 RUN cargo build --release
 
