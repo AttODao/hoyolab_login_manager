@@ -4,4 +4,4 @@
 /migration/target
 /scheduler/target
 /config.yml
-/.env
+/db.env

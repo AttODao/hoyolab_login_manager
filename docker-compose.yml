@@ -1,0 +1,14 @@
+version: '3'
+services:
+  hoyolab_login_manager:
+    container_name: hoyolab_login_manager
+    image: hoyolab_login_manager:latest
+    environment:
+      - RUST_LOG=error
+  db:
+    container_name: postgres
+    image: postgres:latest
+    volumes:
+      - db:/var/lib/postgresql/data:z
+    env_file:
+      - db.env
