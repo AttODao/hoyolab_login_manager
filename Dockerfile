@@ -1,8 +1,10 @@
-FROM rust:latest as build
-COPY ./ /
+FROM rust:alpine as build
+RUN apk update && apk add alpine-sdk libressl-dev
+COPY ./ /hoyolab_login_manager
 WORKDIR /hoyolab_login_manager
-RUN cargo install --path .
+RUN cargo build --release
 
-FROM debian:bullseye-slim
-COPY --from=build /usr/local/cargo/bin/hoyolab_login_manager /usr/local/bin/hoyolab_login_manager
-RUN ["hoyolab_login_manager"]
+FROM alpine:latest
+WORKDIR /app
+COPY --from=build /hoyolab_login_manager/target/release/hoyolab_login_manager ./
+CMD ["./hoyolab_login_manager"]
