@@ -66,7 +66,6 @@ impl Scheduled for Notificator {
                 )
               }) {
                 if notify_time > Duration::ZERO && notify_time <= interval {
-                  error!("resin: {}", discord_user.name);
                   let discord_user = discord_user.clone();
                   let cache_http = self.cache_http.clone();
                   tokio::spawn(async move {
@@ -104,7 +103,6 @@ impl Scheduled for Notificator {
                 })
               {
                 if notify_time > Duration::ZERO && notify_time <= interval {
-                  error!("home_coin: {}", discord_user.name);
                   let discord_user = discord_user.clone();
                   let cache_http = self.cache_http.clone();
                   tokio::spawn(async move {
@@ -134,7 +132,6 @@ impl Scheduled for Notificator {
               for expedition in daily_notes.expeditions {
                 if expedition.remained_time > Duration::ZERO && expedition.remained_time <= interval
                 {
-                  error!("expedition: {}", discord_user.name);
                   let discord_user = discord_user.clone();
                   let cache_http = self.cache_http.clone();
                   tokio::spawn(async move {
@@ -181,7 +178,6 @@ impl Scheduled for Notificator {
                 })
               {
                 if notify_time > Duration::ZERO && notify_time <= interval {
-                  error!("stamina: {}", discord_user.name);
                   let discord_user = discord_user.clone();
                   let cache_http = self.cache_http.clone();
                   tokio::spawn(async move {
@@ -215,7 +211,6 @@ impl Scheduled for Notificator {
                 if expedition.remaining_time > Duration::ZERO
                   && expedition.remaining_time <= interval
                 {
-                  error!("expedition: {}", discord_user.name);
                   let discord_user = discord_user.clone();
                   let cache_http = self.cache_http.clone();
                   tokio::spawn(async move {
