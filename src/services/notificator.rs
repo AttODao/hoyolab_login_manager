@@ -60,10 +60,13 @@ impl Scheduled for Notificator {
               for (notify_mins, notify_time) in CONFIG.genshin_resin_notify_mins.iter().map(|m| {
                 (
                   m,
-                  Duration::from_secs(60 * m).saturating_sub(daily_notes.resin_recovery_time),
+                  daily_notes
+                    .resin_recovery_time
+                    .saturating_sub(Duration::from_secs(60 * m)),
                 )
               }) {
                 if notify_time > Duration::ZERO && notify_time <= interval {
+                  error!("resin: {}", discord_user.name);
                   let discord_user = discord_user.clone();
                   let cache_http = self.cache_http.clone();
                   tokio::spawn(async move {
@@ -94,11 +97,14 @@ impl Scheduled for Notificator {
                 CONFIG.genshin_home_coin_notify_mins.iter().map(|m| {
                   (
                     m,
-                    Duration::from_secs(60 * m).saturating_sub(daily_notes.home_coin_recovery_time),
+                    daily_notes
+                      .home_coin_recovery_time
+                      .saturating_sub(Duration::from_secs(60 * m)),
                   )
                 })
               {
                 if notify_time > Duration::ZERO && notify_time <= interval {
+                  error!("home_coin: {}", discord_user.name);
                   let discord_user = discord_user.clone();
                   let cache_http = self.cache_http.clone();
                   tokio::spawn(async move {
@@ -128,6 +134,7 @@ impl Scheduled for Notificator {
               for expedition in daily_notes.expeditions {
                 if expedition.remained_time > Duration::ZERO && expedition.remained_time <= interval
                 {
+                  error!("expedition: {}", discord_user.name);
                   let discord_user = discord_user.clone();
                   let cache_http = self.cache_http.clone();
                   tokio::spawn(async move {
@@ -167,11 +174,14 @@ impl Scheduled for Notificator {
                 CONFIG.starrail_stamina_notify_mins.iter().map(|m| {
                   (
                     m,
-                    Duration::from_secs(60 * m).saturating_sub(daily_notes.stamina_recover_time),
+                    daily_notes
+                      .stamina_recover_time
+                      .saturating_sub(Duration::from_secs(60 * m)),
                   )
                 })
               {
                 if notify_time > Duration::ZERO && notify_time <= interval {
+                  error!("stamina: {}", discord_user.name);
                   let discord_user = discord_user.clone();
                   let cache_http = self.cache_http.clone();
                   tokio::spawn(async move {
@@ -205,6 +215,7 @@ impl Scheduled for Notificator {
                 if expedition.remaining_time > Duration::ZERO
                   && expedition.remaining_time <= interval
                 {
+                  error!("expedition: {}", discord_user.name);
                   let discord_user = discord_user.clone();
                   let cache_http = self.cache_http.clone();
                   tokio::spawn(async move {
