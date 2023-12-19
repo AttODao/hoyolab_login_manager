@@ -1,5 +1,7 @@
 # hoyolab_login_manager
 hoyolab_login_manager は "原神", "崩壊:スターレイル" をプレイする人のためのDiscord botです.
+![image](https://github.com/AttODao/hoyolab_login_manager/assets/127784728/ee64adad-fe9c-49c3-b89b-9ac2dc87ed95)
+![image](https://github.com/AttODao/hoyolab_login_manager/assets/127784728/1e4d39a6-e901-40f1-b4a4-6f7e699d95a5)
 
 機能:
 - ログインボーナスの自動受取
