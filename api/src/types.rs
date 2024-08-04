@@ -38,4 +38,5 @@ pub enum Server {
 pub enum Game {
   Genshin = 0,
   Starrail = 1,
+  Zzz = 2,
 }
