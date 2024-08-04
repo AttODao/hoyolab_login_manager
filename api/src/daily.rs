@@ -13,11 +13,12 @@ use crate::{
   types::Game,
 };
 
-const OS_DAILY_URL: [&str; 2] = [
+const OS_DAILY_URL: [&str; 3] = [
   "https://sg-hk4e-api.hoyolab.com/event/sol/",
   "https://sg-public-api.hoyolab.com/event/luna/os/",
+  "https://sg-public-api.hoyolab.com/event/luna/zzz/os/",
 ];
-const OS_ACT_ID: [&str; 2] = ["e202102251931481", "e202303301540311"];
+const OS_ACT_ID: [&str; 3] = ["e202102251931481", "e202303301540311", "e202406031448091"];
 
 async fn fetch_daily_endpoint(
   game: Game,
