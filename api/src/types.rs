@@ -20,6 +20,7 @@ pub enum Server {
   GenshinOsAsia,
   #[strum(serialize = "os_cht")]
   GenshinOsCht,
+
   #[strum(serialize = "prod_gf_cn")]
   StarrailProdGfCn,
   #[strum(serialize = "prod_qd_cn")]
@@ -32,6 +33,15 @@ pub enum Server {
   StarrailProdOfficialAsia,
   #[strum(serialize = "prod_official_cht")]
   StarrailProdOfficialCht,
+
+  #[strum(serialize = "prod_gf_us")]
+  ZzzProdGfUs,
+  #[strum(serialize = "prod_gf_eu")]
+  ZzzProdGfEu,
+  #[strum(serialize = "prod_gf_jp")]
+  ZzzProdGfJp,
+  #[strum(serialize = "prod_gf_sg")]
+  ZzzProdGfSg,
 }
 
 #[derive(Copy, Clone, Debug)]
