@@ -14,6 +14,7 @@ const SERVERS: [phf::Map<u8, Server>; 3] = [
     7u8=>Server::GenshinOsEuro,
     8u8=>Server::GenshinOsAsia,
     9u8=>Server::GenshinOsCht,
+    18u8=>Server::GenshinOsAsia,
   ),
   phf_map!(
     1u8=>Server::StarrailProdGfCn,
@@ -58,7 +59,11 @@ pub fn generate_ds(salt: &str) -> Option<String> {
 }
 
 pub fn recognize_server(game: Game, uid: &String) -> Option<Server> {
-  SERVERS[game as usize]
-    .get(&(uid.chars().next()?.to_digit(10)? as u8))
-    .cloned()
+  if uid.len() > 8 {
+    SERVERS[game as usize]
+      .get(&(uid[..uid.len() - 8].parse().ok()?))
+      .cloned()
+  } else {
+    None
+  }
 }
