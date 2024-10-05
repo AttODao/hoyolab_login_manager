@@ -14,9 +14,10 @@ use crate::{
   utils::recognize_server,
 };
 
-const OS_GAME_RECORD_URL: [&str; 2] = [
+const OS_GAME_RECORD_URL: [&str; 3] = [
   "https://bbs-api-os.hoyoverse.com/game_record/genshin/api/",
   "https://bbs-api-os.hoyolab.com/game_record/hkrpg/api/",
+  "https://sg-act-nap-api.hoyolab.com/event/game_record_zzz/api/zzz",
 ];
 
 async fn fetch_game_record_endpoint(
