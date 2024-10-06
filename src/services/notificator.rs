@@ -2,7 +2,10 @@ use std::{sync::Arc, time::Duration, vec};
 
 use api::{
   game_record::get_daily_note,
-  models::{genshin::game_record::GenshinDailyNote, starrail::game_record::StarrailDailyNote},
+  models::{
+    genshin::game_record::GenshinDailyNote, starrail::game_record::StarrailDailyNote,
+    zzz::game_record::ZzzDailyNote,
+  },
 };
 use async_trait::async_trait;
 use database::HlmDatabase;
@@ -166,7 +169,7 @@ impl Scheduled for Notificator {
           .await
           {
             if let Some(daily_notes) = daily_notes.data {
-              // 開拓力
+              // バッテリー
               for (notify_mins, notify_time) in
                 CONFIG.starrail_stamina_notify_mins.iter().map(|m| {
                   (
@@ -225,6 +228,56 @@ impl Scheduled for Notificator {
                               expedition.name
                             ))
                             .thumbnail(expedition.item_url)
+                        })
+                      })
+                      .await
+                    {
+                      error!("[Notificator] notify error: {}", err);
+                    }
+                  });
+                }
+              }
+            }
+          }
+        }
+
+        // ゼンゼロ
+        if let Some(zzz_id) = user.zzz_id {
+          if let Ok(daily_notes) =
+            get_daily_note::<ZzzDailyNote>(zzz_id, login_cookie.clone(), CONFIG.lang.clone()).await
+          {
+            if let Some(daily_notes) = daily_notes.data {
+              // 開拓力
+              for (notify_mins, notify_time) in
+                CONFIG.starrail_stamina_notify_mins.iter().map(|m| {
+                  (
+                    m,
+                    daily_notes
+                      .energy
+                      .restore
+                      .saturating_sub(Duration::from_secs(60 * m)),
+                  )
+                })
+              {
+                if notify_time > Duration::ZERO && notify_time <= interval {
+                  let discord_user = discord_user.clone();
+                  let cache_http = self.cache_http.clone();
+                  tokio::spawn(async move {
+                    tokio::time::sleep(notify_time).await;
+                    if let Err(err) = discord_user
+                      .direct_message(cache_http, |m| {
+                        m.embed(|e| {
+                          e.title("通知").color(Color::DARK_GREEN).description(
+                            if notify_mins > &0 {
+                              let notify_mins = notify_mins;
+                              format!(
+                                "【ゼンゼロ】バッテリーがあふれるまで残り{}分です.",
+                                notify_mins
+                              )
+                            } else {
+                              "【ゼンゼロ】バッテリーがあふれました.".to_string()
+                            },
+                          )
                         })
                       })
                       .await

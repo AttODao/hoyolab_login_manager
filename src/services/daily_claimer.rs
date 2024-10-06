@@ -5,7 +5,7 @@ use api::{
   errors::NetworkError,
   models::{
     genshin::daily::GenshinClaimDaily, login_cookie::LoginCookie,
-    starrail::daily::StarrailClaimDaily,
+    starrail::daily::StarrailClaimDaily, zzz::daily::ZzzClaimDaily,
   },
 };
 use async_trait::async_trait;
@@ -66,7 +66,7 @@ impl Scheduled for DailyClaimer {
           .login_cookie()
           .unwrap_or(LoginCookie::new("".to_string(), "".to_string()));
         let claim_daily = async {
-          let mut claim = (None, None);
+          let mut claim = (None, None, None);
           if let Some(_) = user.genshin_id {
             claim.0 = Some(
               claim_daily::<GenshinClaimDaily>(login_cookie.clone(), CONFIG.lang.clone()).await?,
@@ -76,6 +76,10 @@ impl Scheduled for DailyClaimer {
             claim.1 = Some(
               claim_daily::<StarrailClaimDaily>(login_cookie.clone(), CONFIG.lang.clone()).await?,
             );
+          }
+          if let Some(_) = user.zzz_id {
+            claim.2 =
+              Some(claim_daily::<ZzzClaimDaily>(login_cookie.clone(), CONFIG.lang.clone()).await?);
           }
           Ok::<_, NetworkError>(claim)
         }
@@ -112,6 +116,19 @@ impl Scheduled for DailyClaimer {
                             e.color(Color::DARK_RED).description(format!(
                               "受け取りに失敗しました. ({})",
                               starrail_claim_daily.message
+                            ));
+                          }
+                        }
+                      }
+                      if let Some(zzz_claim_daily) = claim_daily.2 {
+                        match zzz_claim_daily.data {
+                          Some(_) => {
+                            e.description("受け取りが完了しました.");
+                          }
+                          None => {
+                            e.color(Color::DARK_RED).description(format!(
+                              "受け取りに失敗しました. ({})",
+                              zzz_claim_daily.message
                             ));
                           }
                         }
