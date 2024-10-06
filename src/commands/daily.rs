@@ -4,7 +4,7 @@ use api::{
   models::{
     genshin::daily::{GenshinClaimDaily, GenshinDailyInfo},
     starrail::daily::{StarrailClaimDaily, StarrailDailyInfo},
-    zzz::daily::ZzzClaimDaily,
+    zzz::daily::{ZzzClaimDaily, ZzzDailyInfo},
   },
 };
 use log::error;
@@ -90,16 +90,27 @@ pub async fn info(
     Ok(Some(database_user)) => Ok(Some(match database_user.login_cookie() {
       Some(login_cookie) => Some(
         async {
-          let mut daily_info = (None, None);
-          if !matches!(game, Some(GameChoice::Starrail)) && database_user.genshin_id.is_some() {
+          let mut daily_info = (None, None, None);
+          if (matches!(game, Some(GameChoice::Genshin)) || matches!(game, None))
+            && database_user.genshin_id.is_some()
+          {
             daily_info.0 = Some(
               get_daily_info::<GenshinDailyInfo>(login_cookie.clone(), CONFIG.lang.clone()).await?,
             );
           }
-          if !matches!(game, Some(GameChoice::Genshin)) && database_user.starrail_id.is_some() {
+          if (matches!(game, Some(GameChoice::Starrail)) || matches!(game, None))
+            && database_user.starrail_id.is_some()
+          {
             daily_info.1 = Some(
               get_daily_info::<StarrailDailyInfo>(login_cookie.clone(), CONFIG.lang.clone())
                 .await?,
+            );
+          }
+          if (matches!(game, Some(GameChoice::Zzz)) || matches!(game, None))
+            && database_user.zzz_id.is_some()
+          {
+            daily_info.2 = Some(
+              get_daily_info::<ZzzDailyInfo>(login_cookie.clone(), CONFIG.lang.clone()).await?,
             );
           }
           Ok::<_, NetworkError>((database_user, daily_info))
@@ -162,6 +173,24 @@ pub async fn info(
                       starrail_daily_info.total_sign_day
                     ),
                     None => format!("取得に失敗しました. ({})", starrail_daily_info.message),
+                  },
+                  true,
+                );
+              };
+              if let Some(zzz_daily_info) = daily_info.1 .2 {
+                e.field(
+                  "ゼンゼロ",
+                  match zzz_daily_info.data {
+                    Some(zzz_daily_info) => format!(
+                      "本日のログインボーナス: {}\n今月のログイン日数: {}",
+                      if zzz_daily_info.is_sign {
+                        "取得済み"
+                      } else {
+                        "未取得"
+                      },
+                      zzz_daily_info.total_sign_day
+                    ),
+                    None => format!("取得に失敗しました. ({})", zzz_daily_info.message),
                   },
                   true,
                 );

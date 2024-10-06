@@ -10,7 +10,7 @@ use crate::{
 
 #[derive(Debug, Deserialize)]
 pub struct ZzzDailyInfo {
-  pub to_tal_sign_day: i32,
+  pub total_sign_day: i32,
   pub is_sign: bool,
   pub sign_cnt_missed: i32,
 }
