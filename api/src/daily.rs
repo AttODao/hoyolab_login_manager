@@ -1,6 +1,9 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, hash::Hash};
 
-use reqwest::{Method, Response};
+use reqwest::{
+  header::{HeaderMap, HeaderName, HeaderValue},
+  Method, Response,
+};
 
 use crate::{
   api::fetch_endpoint,
@@ -41,7 +44,16 @@ async fn fetch_daily_endpoint(
     lang,
     None,
     Some(query),
-    None,
+    match game {
+      Game::Zzz => Some(
+        (&[("x-rpc-signgame".to_string(), "zzz".to_string())]
+          .into_iter()
+          .collect::<HashMap<_, _>>())
+          .try_into()
+          .unwrap(),
+      ),
+      _ => None,
+    },
   )
   .await
 }

@@ -49,7 +49,7 @@ pub struct ZzzAvatar {
   pub group_icon_path: String,
   pub hollow_icon_path: String,
   pub rank: i32,
-  pub is_choosen: bool,
+  pub is_chosen: bool,
 }
 #[derive(Debug, Deserialize)]
 pub struct ZzzBuddy {

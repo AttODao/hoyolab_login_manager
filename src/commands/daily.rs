@@ -4,6 +4,7 @@ use api::{
   models::{
     genshin::daily::{GenshinClaimDaily, GenshinDailyInfo},
     starrail::daily::{StarrailClaimDaily, StarrailDailyInfo},
+    zzz::daily::ZzzClaimDaily,
   },
 };
 use log::error;
@@ -208,7 +209,7 @@ pub async fn claim(context: Context<'_>) -> Result<(), CommandError> {
     Ok(Some(database_user)) => Ok(Some(match database_user.login_cookie() {
       Some(login_cookie) => Some(
         async {
-          let mut claim = (None, None);
+          let mut claim = (None, None, None);
           if matches!(database_user.genshin_id, Some(_)) {
             claim.0 = Some(
               claim_daily::<GenshinClaimDaily>(login_cookie.clone(), CONFIG.lang.clone()).await?,
@@ -218,6 +219,10 @@ pub async fn claim(context: Context<'_>) -> Result<(), CommandError> {
             claim.1 = Some(
               claim_daily::<StarrailClaimDaily>(login_cookie.clone(), CONFIG.lang.clone()).await?,
             );
+          }
+          if matches!(database_user.zzz_id, Some(_)) {
+            claim.2 =
+              Some(claim_daily::<ZzzClaimDaily>(login_cookie.clone(), CONFIG.lang.clone()).await?);
           }
           Ok::<_, NetworkError>(claim)
         }
@@ -248,6 +253,16 @@ pub async fn claim(context: Context<'_>) -> Result<(), CommandError> {
             if let Some(starrail_claim_daily) = claim_daily.1 {
               e.field(
                 "スターレイル",
+                match starrail_claim_daily.data {
+                  Some(_) => "受け取りが完了しました.".to_string(),
+                  None => format!("受け取りに失敗しました. ({})", starrail_claim_daily.message),
+                },
+                true,
+              );
+            }
+            if let Some(starrail_claim_daily) = claim_daily.2 {
+              e.field(
+                "ゼンゼロ",
                 match starrail_claim_daily.data {
                   Some(_) => "受け取りが完了しました.".to_string(),
                   None => format!("受け取りに失敗しました. ({})", starrail_claim_daily.message),
