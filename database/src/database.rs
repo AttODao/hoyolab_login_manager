@@ -75,11 +75,13 @@ impl HlmDatabase {
       let not_set = match game {
         Game::Genshin => &user.genshin_id,
         Game::Starrail => &user.starrail_id,
+        Game::Zzz => &user.zzz_id,
       } == &None;
       let mut user: users::ActiveModel = user.into();
       match game {
         Game::Genshin => user.genshin_id = Set(Some(game_id)),
         Game::Starrail => user.starrail_id = Set(Some(game_id)),
+        Game::Zzz => user.zzz_id = Set(Some(game_id)),
       }
       user.update(&self.conn).await?;
       Ok(if not_set {
@@ -95,6 +97,7 @@ impl HlmDatabase {
       match game {
         Game::Genshin => user.genshin_id = Set(Some(game_id)),
         Game::Starrail => user.starrail_id = Set(Some(game_id)),
+        Game::Zzz => user.zzz_id = Set(Some(game_id)),
       }
       users::Entity::insert(user).exec(&self.conn).await?;
       Ok(RegisterResult::Registered)

@@ -14,9 +14,10 @@ use crate::{
   utils::recognize_server,
 };
 
-const OS_GAME_RECORD_URL: [&str; 2] = [
+const OS_GAME_RECORD_URL: [&str; 3] = [
   "https://bbs-api-os.hoyoverse.com/game_record/genshin/api/",
   "https://bbs-api-os.hoyolab.com/game_record/hkrpg/api/",
+  "https://sg-public-api.hoyolab.com/event/game_record_zzz/api/zzz/",
 ];
 
 async fn fetch_game_record_endpoint(
@@ -47,14 +48,15 @@ pub async fn get_user_stats<T: UserStats>(
   // println!(
   //   "{}",
   //   fetch_game_record_endpoint(
-  //     "genshin/api/index",
+  //     T::game(),
+  //     "index",
   //     Method::GET,
-  //     account_info.clone(),
+  //     login_cookie.clone(),
   //     lang.clone(),
   //     &vec![
   //       (
   //         "server".to_string(),
-  //         recognize_server(game, &uid)
+  //         recognize_server(T::game(), &uid)
   //           .ok_or(NetworkError::InvalidUidError)?
   //           .to_string(),
   //       ),
@@ -74,7 +76,7 @@ pub async fn get_user_stats<T: UserStats>(
     Method::GET,
     login_cookie,
     lang,
-    &vec![
+    &[
       (
         "server".to_string(),
         recognize_server(game, &uid)
@@ -84,7 +86,7 @@ pub async fn get_user_stats<T: UserStats>(
       ("role_id".to_string(), uid),
     ]
     .into_iter()
-    .collect::<HashMap<String, String>>(),
+    .collect::<HashMap<_, _>>(),
   )
   .await?;
   response
@@ -95,38 +97,39 @@ pub async fn get_user_stats<T: UserStats>(
 
 pub async fn get_daily_note<T: DailyNote>(
   uid: String,
-  account_info: LoginCookie,
+  login_cookie: LoginCookie,
   lang: String,
 ) -> Result<JsonWrapper<T>, NetworkError> {
-  // println!(
-  //   "{}",
-  //   fetch_game_record_endpoint(
-  //     "genshin/api/dailyNote",
-  //     Method::GET,
-  //     account_info.clone(),
-  //     lang.clone(),
-  //     &vec![
-  //       (
-  //         "server".to_string(),
-  //         recognize_server(game, &uid)
-  //           .ok_or(NetworkError::InvalidUidError)?
-  //           .to_string(),
-  //       ),
-  //       ("role_id".to_string(), uid.clone())
-  //     ]
-  //     .into_iter()
-  //     .collect::<HashMap<String, String>>(),
-  //   )
-  //   .await?
-  //   .text()
-  //   .await?
-  // );
+  println!(
+    "{}",
+    fetch_game_record_endpoint(
+      T::game(),
+      "note",
+      Method::GET,
+      login_cookie.clone(),
+      lang.clone(),
+      &[
+        (
+          "server".to_string(),
+          recognize_server(T::game(), &uid)
+            .ok_or(NetworkError::InvalidUidError)?
+            .to_string(),
+        ),
+        ("role_id".to_string(), uid.clone())
+      ]
+      .into_iter()
+      .collect::<HashMap<_, _>>(),
+    )
+    .await?
+    .text()
+    .await?
+  );
   let game = T::game();
   let response = fetch_game_record_endpoint(
     game,
-    ["dailyNote", "note"][game as usize],
+    ["dailyNote", "note", "note"][game as usize],
     Method::GET,
-    account_info,
+    login_cookie,
     lang,
     &vec![
       (

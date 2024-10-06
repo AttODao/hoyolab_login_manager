@@ -1,34 +1,36 @@
 use std::time::SystemTime;
 
+use phf::phf_map;
 use rand::seq::SliceRandom;
 
 use crate::types::{Game, Server};
 
-const SERVERS: [[Option<Server>; 10]; 2] = [
-  [
-    None,
-    Some(Server::GenshinCnGf01),
-    Some(Server::GenshinCnGf01),
-    None,
-    None,
-    Some(Server::GenshinCnQd01),
-    Some(Server::GenshinOsUsa),
-    Some(Server::GenshinOsEuro),
-    Some(Server::GenshinOsAsia),
-    Some(Server::GenshinOsCht),
-  ],
-  [
-    None,
-    Some(Server::StarrailProdGfCn),
-    Some(Server::StarrailProdGfCn),
-    None,
-    None,
-    Some(Server::StarrailProdQdCn),
-    Some(Server::StarrailProdOfficialUsa),
-    Some(Server::StarrailProdOfficialEur),
-    Some(Server::StarrailProdOfficialAsia),
-    Some(Server::StarrailProdOfficialCht),
-  ],
+const SERVERS: [phf::Map<u8, Server>; 3] = [
+  phf_map!(
+    1u8=>Server::GenshinCnGf01,
+    2u8=>Server::GenshinCnGf01,
+    5u8=>Server::GenshinCnQd01,
+    6u8=>Server::GenshinOsUsa,
+    7u8=>Server::GenshinOsEuro,
+    8u8=>Server::GenshinOsAsia,
+    9u8=>Server::GenshinOsCht,
+    18u8=>Server::GenshinOsAsia,
+  ),
+  phf_map!(
+    1u8=>Server::StarrailProdGfCn,
+    2u8=>Server::StarrailProdGfCn,
+    5u8=>Server::StarrailProdQdCn,
+    6u8=>Server::StarrailProdOfficialUsa,
+    7u8=>Server::StarrailProdOfficialEur,
+    8u8=>Server::StarrailProdOfficialAsia,
+    9u8=>Server::StarrailProdOfficialCht,
+  ),
+  phf_map!(
+    10u8=>Server::ZzzProdGfUs,
+    13u8=>Server::ZzzProdGfJp,
+    15u8=>Server::ZzzProdGfEu,
+    17u8=>Server::ZzzProdGfSg,
+  ),
 ];
 
 // From: https://qiita.com/aoyagikouhei/items/b796632ff6581197737c
@@ -57,5 +59,11 @@ pub fn generate_ds(salt: &str) -> Option<String> {
 }
 
 pub fn recognize_server(game: Game, uid: &String) -> Option<Server> {
-  SERVERS[game as usize][uid.chars().next()?.to_digit(10)? as usize]
+  if uid.len() > 8 {
+    SERVERS[game as usize]
+      .get(&(uid[..uid.len() - 8].parse().ok()?))
+      .cloned()
+  } else {
+    None
+  }
 }

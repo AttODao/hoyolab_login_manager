@@ -10,6 +10,7 @@ pub struct Model {
   pub discord_id: i64,
   pub genshin_id: Option<String>,
   pub starrail_id: Option<String>,
+  pub zzz_id: Option<String>,
   pub ltoken: Option<String>,
   pub ltuid: Option<String>,
   pub claim_daily: bool,
@@ -18,11 +19,10 @@ pub struct Model {
 
 impl Model {
   pub fn login_cookie(&self) -> Option<LoginCookie> {
-    if let (Some(ltoken), Some(ltuid)) = (&self.ltoken, &self.ltuid) {
-      Some(LoginCookie::new(ltoken.clone(), ltuid.clone()))
-    } else {
-      None
-    }
+    Some(LoginCookie {
+      ltoken: self.ltoken.clone()?,
+      ltuid: self.ltuid.clone()?,
+    })
   }
 }
 
