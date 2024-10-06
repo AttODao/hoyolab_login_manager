@@ -17,10 +17,11 @@ impl MigrationTrait for Migration {
               .not_null()
               .primary_key(),
           )
-          .col(ColumnDef::new(Users::GenshinId).char_len(9))
-          .col(ColumnDef::new(Users::StarrailId).char_len(9))
+          .col(ColumnDef::new(Users::GenshinId).char_len(10))
+          .col(ColumnDef::new(Users::StarrailId).char_len(10))
+          .col(ColumnDef::new(Users::ZzzId).char_len(10))
           .col(ColumnDef::new(Users::Ltoken).char_len(40))
-          .col(ColumnDef::new(Users::Ltuid).char_len(9))
+          .col(ColumnDef::new(Users::Ltuid).char_len(10))
           .col(
             ColumnDef::new(Users::ClaimDaily)
               .boolean()
@@ -51,6 +52,7 @@ enum Users {
   DiscordId,
   GenshinId,
   StarrailId,
+  ZzzId,
   Ltoken,
   Ltuid,
   ClaimDaily,
