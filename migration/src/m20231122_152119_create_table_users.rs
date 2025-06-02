@@ -20,8 +20,8 @@ impl MigrationTrait for Migration {
           .col(ColumnDef::new(Users::GenshinId).char_len(10))
           .col(ColumnDef::new(Users::StarrailId).char_len(10))
           .col(ColumnDef::new(Users::ZzzId).char_len(10))
-          .col(ColumnDef::new(Users::Ltoken).char_len(40))
-          .col(ColumnDef::new(Users::Ltuid).char_len(10))
+          .col(ColumnDef::new(Users::Ltoken).char_len(256))
+          .col(ColumnDef::new(Users::Ltuid).char_len(16))
           .col(
             ColumnDef::new(Users::ClaimDaily)
               .boolean()
